@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gstack — 一个人的工程团队</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-deep: #0a0a0f;
+            --bg-gradient-start: #0d1117;
+            --bg-gradient-end: #161b22;
+            --surface: rgba(255, 255, 255, 0.03);
+            --surface-hover: rgba(255, 255, 255, 0.06);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-strong: rgba(255, 255, 255, 0.15);
+            --text-primary: #ffffff;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --accent: #58a6ff;
+            --accent-glow: rgba(88, 166, 255, 0.3);
+            --accent-secondary: #f0883e;
+            --success: #3fb950;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-gradient-start);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(13, 17, 23, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .nav-brand img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-cta {
+            padding: 0.5rem 1rem;
+            background: var(--accent);
+            color: var(--bg-deep) !important;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .nav-cta:hover {
+            background: #79b8ff;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 0.875rem;
+            color: var(--accent);
+            margin-bottom: 2rem;
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.5rem;
+            max-width: 900px;
+        }
+
+        .hero h1 .highlight {
+            color: var(--accent);
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.125rem, 2vw, 1.5rem);
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 4rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg-deep);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            background: #79b8ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 40px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface-hover);
+            border-color: var(--border-strong);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 4rem;
+            padding: 2rem 3rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            display: block;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Section Styles */
+        section {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-label {
+            font-size: 0.875rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .section-desc {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Pain Points Section */
+        .pain-points {
+            background: linear-gradient(180deg, transparent 0%, rgba(88, 166, 255, 0.03) 50%, transparent 100%);
+        }
+
+        .pain-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .pain-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .pain-card:hover {
+            background: var(--surface-hover);
+            border-color: var(--border-strong);
+            transform: translateY(-4px);
+        }
+
+        .pain-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid rgba(88, 166, 255, 0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .pain-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .pain-card p {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            line-height: 1.7;
+        }
+
+        /* Comparison Section */
+        .comparison {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .comparison-content h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .comparison-content h2 .highlight {
+            color: var(--accent);
+        }
+
+        .comparison-content > p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric {
+            margin-bottom: 2rem;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .metric-label {
+            font-weight: 600;
+            font-size: 0.9375rem;
+        }
+
+        .metric-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--accent);
+        }
+
+        .metric-bar {
+            height: 8px;
+            background: var(--bg-gradient-end);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .metric-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 4px;
+            transition: width 1s ease-out;
+        }
+
+        .metric-comparison {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+        }
+
+        /* Use Cases Section */
+        .use-cases-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .use-case-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .use-case-card:hover {
+            background: var(--surface-hover);
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        .use-case-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(88, 166, 255, 0.12);
+            border: 1px solid rgba(88, 166, 255, 0.2);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .use-case-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .use-case-card ul {
+            list-style: none;
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+        }
+
+        .use-case-card li {
+            padding: 0.375rem 0;
+            padding-left: 1.25rem;
+            position: relative;
+        }
+
+        .use-case-card li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+
+        /* Code Section */
+        .code-section {
+            background: transparent;
+        }
+
+        .code-container {
+            background: var(--bg-deep);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background: var(--surface);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .code-dot.red { background: #ff5f56; }
+        .code-dot.yellow { background: #ffbd2e; }
+        .code-dot.green { background: #27c93f; }
+
+        .code-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            margin-left: auto;
+        }
+
+        .code-body {
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.8;
+            overflow-x: auto;
+        }
+
+        .code-line {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .line-num {
+            color: var(--text-muted);
+            min-width: 2rem;
+            text-align: right;
+            user-select: none;
+        }
+
+        .line-content {
+            color: var(--text-secondary);
+        }
+
+        .line-content .comment { color: var(--text-muted); }
+        .line-content .keyword { color: #ff7b72; }
+        .line-content .string { color: #a5d6ff; }
+        .line-content .function { color: #d2a8ff; }
+        .line-content .prompt { color: var(--success); }
+        .line-content .cmd { color: var(--text-primary); }
+
+        /* Skills Grid */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .skill-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            transition: all 0.2s;
+        }
+
+        .skill-item:hover {
+            background: var(--surface-hover);
+            border-color: var(--border-strong);
+        }
+
+        .skill-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid rgba(88, 166, 255, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .skill-content h4 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9375rem;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .skill-content p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* CTA Section */
+        .cta-wrapper {
+            padding: 0 2rem 4rem;
+        }
+
+        .cta {
+            text-align: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .cta h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cta p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-copy {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .pain-grid,
+            .use-cases-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .comparison-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero {
+                padding: 6rem 1.5rem 3rem;
+            }
+            
+            .hero-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+                padding: 1.5rem 2rem;
+            }
+            
+            section {
+                padding: 4rem 1.5rem;
+            }
+            
+            .pain-grid,
+            .use-cases-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta {
+                margin: 0 1rem 3rem;
+            }
+        }
+
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="nav-brand">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+                <path d="M8 12h16M8 16h12M8 20h8" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <defs>
+                    <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
+                        <stop stop-color="#58a6ff"/>
+                        <stop offset="1" stop-color="#f0883e"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            gstack
+        </a>
+        <ul class="nav-links">
+            <li><a href="#problems">问题</a></li>
+            <li><a href="#comparison">对比</a></li>
+            <li><a href="#skills">技能</a></li>
+            <li><a href="#start">开始</a></li>
+            <li><a href="https://github.com/garrytan/gstack" class="nav-cta" target="_blank">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-badge">MIT 许可证 · 开源免费</div>
+        <h1>
+            一个人的<br>
+            <span class="highlight">工程团队</span>
+        </h1>
+        <p class="hero-subtitle">
+            gstack 将 Claude Code 转变为可管理的虚拟工程团队。
+            18 位专家，25 个斜杠命令，助你每天交付 10,000+ 行生产代码。
+        </p>
+        <div class="hero-cta">
+            <a href="#start" class="btn btn-primary">开始安装</a>
+            <a href="https://github.com/garrytan/gstack" class="btn btn-secondary" target="_blank">查看文档</a>
+        </div>
+        <div class="hero-stats">
+            <div class="stat">
+                <span class="stat-number">600K+</span>
+                <span class="stat-label">60天代码行数</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">18</span>
+                <span class="stat-label">专家角色</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">25</span>
+                <span class="stat-label">斜杠命令</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pain Points Section -->
+    <section class="pain-points" id="problems">
+        <div class="section-header">
+            <div class="section-label">// 问题</div>
+            <h2 class="section-title">AI 开发正在被低效拖慢</h2>
+            <p class="section-desc">当模型能力突飞猛进时，我们的开发流程却停留在石器时代。</p>
+        </div>
+        <div class="pain-grid">
+            <div class="pain-card">
+                <div class="pain-icon">😵</div>
+                <h3>提示词混乱无章</h3>
+                <p>每次与 AI 对话都从零开始，没有结构化流程，重复解释上下文，浪费大量 token 和时间。</p>
+            </div>
+            <div class="pain-card">
+                <div class="pain-icon">🔍</div>
+                <h3>代码审查流于形式</h3>
+                <p>AI 生成的代码看似正确，却暗藏 bug。传统审查无法发现那些"能通过 CI 但在生产爆炸"的问题。</p>
+            </div>
+            <div class="pain-card">
+                <div class="pain-icon">🐛</div>
+                <h3>测试覆盖率缺失</h3>
+                <p>追求速度时测试被牺牲，导致回归 bug 频发。没有自动化 QA，每次发布都是赌博。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section class="comparison" id="comparison">
+        <div class="comparison-grid">
+            <div class="comparison-content">
+                <h2>
+                    开发者值得拥有<br>
+                    <span class="highlight">10倍效率的提升</span>
+                </h2>
+                <p>同一个人，不同的时代。区别在于工具。</p>
+                
+                <div class="metric">
+                    <div class="metric-header">
+                        <span class="metric-label">代码产出</span>
+                        <span class="metric-value">10x</span>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-fill" style="width: 95%"></div>
+                    </div>
+                    <div class="metric-comparison">
+                        <span>传统开发: 1,000 行/天</span>
+                        <span>gstack: 10,000+ 行/天</span>
+                    </div>
+                </div>
+                
+                <div class="metric">
+                    <div class="metric-header">
+                        <span class="metric-label">测试覆盖率</span>
+                        <span class="metric-value">35%</span>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-fill" style="width: 90%"></div>
+                    </div>
+                    <div class="metric-comparison">
+                        <span>自动生成测试</span>
+                        <span>每个 bug 修复都有回归测试</span>
+                    </div>
+                </div>
+                
+                <div class="metric">
+                    <div class="metric-header">
+                        <span class="metric-label">并行冲刺</span>
+                        <span class="metric-value">15x</span>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-fill" style="width: 100%"></div>
+                    </div>
+                    <div class="metric-comparison">
+                        <span>传统: 1 个功能/天</span>
+                        <span>gstack: 10-15 个并行冲刺</span>
+                    </div>
+                </div>
+            </div>
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-dot red"></div>
+                    <div class="code-dot yellow"></div>
+                    <div class="code-dot green"></div>
+                    <div class="code-title">Garry Tan 的 2026 贡献数据</div>
+                </div>
+                <div class="code-body">
+                    <div class="code-line">
+                        <span class="line-num">1</span>
+                        <span class="line-content"><span class="comment"># 2026年 GitHub 贡献统计</span></span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-num">2</span>
+                        <span class="line-content"></span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-num">3</span>
+                        <span class="line-content"><span class="prompt">$</span> <span class="cmd">gstack stats --year=2026</span></span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-num">4</span>
+                        <span class="line-content"></span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-num">5</span>
+                        <span class="line-content">📊 <span class="string">"过去 7 天"</span></span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-num">6</span>
+                        <span class="line-content">   新增代码: <span class="function">140,751</span> 行</span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-num">7</span>
+                        <span class="line-content">   提交次数: <span class="function">362</span> 次</span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-num">8</span>
+                        <span class="line-content">   净增代码: <span class="function">115,000</span> 行</span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-num">9</span>
+                        <span class="line-content"></span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-num">10</span>
+                        <span class="line-content">📈 <span class="string">"60 天总计"</span></span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-num">11</span>
+                        <span class="line-content">   生产代码: <span class="function">600,000+</span> 行</span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-num">12</span>
+                        <span class="line-content">   测试占比: <span class="function">35%</span></span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-num">13</span>
+                        <span class="line-content">   日均产出: <span class="function">10,000-20,000</span> 行</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section id="use-cases">
+        <div class="section-header">
+            <div class="section-label">// 应用场景</div>
+            <h2 class="section-title">为不同角色量身定制</h2>
+            <p class="section-desc">无论你是创始人、技术负责人还是首次使用 Claude Code 的用户，gstack 都能让你事半功倍。</p>
+        </div>
+        <div class="use-cases-grid">
+            <div class="use-case-card">
+                <div class="use-case-icon">🚀</div>
+                <h3>创始人 & CEO</h3>
+                <ul>
+                    <li>像二十人团队一样构建产品</li>
+                    <li>在写代码前重新框定问题</li>
+                    <li>每天发布 10,000+ 行代码</li>
+                </ul>
+            </div>
+            <div class="use-case-card">
+                <div class="use-case-icon">⚡</div>
+                <h3>技术负责人</h3>
+                <ul>
+                    <li>严格的架构审查和数据流分析</li>
+                    <li>自动化 QA 和回归测试</li>
+                    <li>一键发布到生产环境</li>
+                </ul>
+            </div>
+            <div class="use-case-card">
+                <div class="use-case-icon">🎯</div>
+                <h3>Claude Code 新用户</h3>
+                <ul>
+                    <li>结构化角色，而非空白提示</li>
+                    <li>最佳入门方式，避免新手陷阱</li>
+                    <li>18 位专家随时待命</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills">
+        <div class="section-header">
+            <div class="section-label">// 核心技能</div>
+            <h2 class="section-title">18 位专家，七种强力工具</h2>
+            <p class="section-desc">每个技能都输入到下一个，形成完整的开发冲刺流程。</p>
+        </div>
+        <div class="skills-grid">
+            <div class="skill-item">
+                <div class="skill-icon">💭</div>
+                <div class="skill-content">
+                    <h4>/office-hours</h4>
+                    <p>YC 办公时间 — 六个强制性问题，在你写代码之前重新框定产品</p>
+                </div>
+            </div>
+            <div class="skill-item">
+                <div class="skill-icon">📋</div>
+                <div class="skill-content">
+                    <h4>/plan-ceo-review</h4>
+                    <p>CEO 视角 — 重新思考问题，找到隐藏的 10 星产品机会</p>
+                </div>
+            </div>
+            <div class="skill-item">
+                <div class="skill-icon">🏗️</div>
+                <div class="skill-content">
+                    <h4>/plan-eng-review</h4>
+                    <p>工程经理 — 锁定架构、数据流、边界情况和测试计划</p>
+                </div>
+            </div>
+            <div class="skill-item">
+                <div class="skill-icon">👀</div>
+                <div class="skill-content">
+                    <h4>/review</h4>
+                    <p>高级工程师 — 找到通过 CI 但在生产爆炸的 bug</p>
+                </div>
+            </div>
+            <div class="skill-item">
+                <div class="skill-icon">🧪</div>
+                <div class="skill-content">
+                    <h4>/qa</h4>
+                    <p>QA 负责人 — 真实浏览器测试，自动修复并生成回归测试</p>
+                </div>
+            </div>
+            <div class="skill-item">
+                <div class="skill-icon">🚀</div>
+                <div class="skill-content">
+                    <h4>/ship</h4>
+                    <p>发布工程师 — 同步、测试、审计覆盖率、推送、打开 PR</p>
+                </div>
+            </div>
+            <div class="skill-item">
+                <div class="skill-icon">🌐</div>
+                <div class="skill-content">
+                    <h4>/browse</h4>
+                    <p>QA 工程师 — 给代理眼睛，真实 Chromium 浏览器和截图</p>
+                </div>
+            </div>
+            <div class="skill-item">
+                <div class="skill-icon">🤖</div>
+                <div class="skill-content">
+                    <h4>/codex</h4>
+                    <p>第二意见 — OpenAI Codex CLI 的独立代码审查</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start Section -->
+    <section class="code-section" id="start">
+        <div class="section-header">
+            <div class="section-label">// 快速开始</div>
+            <h2 class="section-title">30 秒安装，5 分钟上手</h2>
+            <p class="section-desc">要求：Claude Code、Git、Bun v1.0+、Node.js（Windows）</p>
+        </div>
+        <div class="code-container">
+            <div class="code-header">
+                <div class="code-dot red"></div>
+                <div class="code-dot yellow"></div>
+                <div class="code-dot green"></div>
+                <div class="code-title">terminal — bash</div>
+            </div>
+            <div class="code-body">
+                <div class="code-line">
+                    <span class="line-num">1</span>
+                    <span class="line-content"><span class="comment"># 安装 gstack</span></span>
+                </div>
+                <div class="code-line">
+                    <span class="line-num">2</span>
+                    <span class="line-content"><span class="prompt">$</span> <span class="cmd">git clone https://github.com/garrytan/gstack.git ~/.claude/skills/gstack</span></span>
+                </div>
+                <div class="code-line">
+                    <span class="line-num">3</span>
+                    <span class="line-content"><span class="prompt">$</span> <span class="cmd">cd ~/.claude/skills/gstack && ./setup</span></span>
+                </div>
+                <div class="code-line">
+                    <span class="line-num">4</span>
+                    <span class="line-content"></span>
+                </div>
+                <div class="code-line">
+                    <span class="line-num">5</span>
+                    <span class="line-content"><span class="comment"># 开始使用</span></span>
+                </div>
+                <div class="code-line">
+                    <span class="line-num">6</span>
+                    <span class="line-content"><span class="prompt">$</span> <span class="cmd">/office-hours</span> <span class="comment"># 描述你正在构建的内容</span></span>
+                </div>
+                <div class="code-line">
+                    <span class="line-num">7</span>
+                    <span class="line-content"><span class="prompt">$</span> <span class="cmd">/plan-ceo-review</span> <span class="comment"># 功能想法审查</span></span>
+                </div>
+                <div class="code-line">
+                    <span class="line-num">8</span>
+                    <span class="line-content"><span class="prompt">$</span> <span class="cmd">/review</span> <span class="comment"># 代码审查</span></span>
+                </div>
+                <div class="code-line">
+                    <span class="line-num">9</span>
+                    <span class="line-content"><span class="prompt">$</span> <span class="cmd">/qa https://staging.myapp.com</span> <span class="comment"># 预发布测试</span></span>
+                </div>
+                <div class="code-line">
+                    <span class="line-num">10</span>
+                    <span class="line-content"><span class="prompt">$</span> <span class="cmd">/ship</span> <span class="comment"># 发布 PR</span></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <div class="cta-wrapper">
+        <div class="cta">
+            <h2>来乘风破浪</h2>
+            <p>免费、MIT 许可、开源、立即可用。没有高级版。没有等待名单。Fork 它，改进它，让它成为你自己的。</p>
+            <div class="hero-cta">
+                <a href="https://github.com/garrytan/gstack" class="btn btn-primary" target="_blank">Fork on GitHub</a>
+                <a href="https://ycombinator.com/software" class="btn btn-secondary" target="_blank">我们在招聘</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <a href="https://github.com/garrytan/gstack" target="_blank">GitHub</a>
+            <a href="https://x.com/garrytan" target="_blank">Garry Tan</a>
+            <a href="https://www.ycombinator.com/" target="_blank">Y Combinator</a>
+        </div>
+        <p class="footer-copy">MIT 许可证 · 2026 gstack</p>
+    </footer>
+
+    <script>
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section-header, .pain-card, .use-case-card, .skill-item, .metric').forEach(el => {
+            el.classList.add('fade-in');
+            observer.observe(el);
+        });
+
+        // Animate metric bars on scroll
+        const metricObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const fills = entry.target.querySelectorAll('.metric-fill');
+                    fills.forEach(fill => {
+                        const width = fill.style.width;
+                        fill.style.width = '0';
+                        setTimeout(() => {
+                            fill.style.width = width;
+                        }, 100);
+                    });
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.metric').forEach(metric => {
+            metricObserver.observe(metric);
+        });
+    </script>
+</body>
+</html>
