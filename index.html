@@ -1,896 +1,399 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>gstack — 一个人的工程团队</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Syne', 'sans-serif'],
+                        heading: ['Space Grotesk', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        surface: {
+                            0: 'rgba(255, 255, 255, 0)',
+                            50: 'rgba(255, 255, 255, 0.03)',
+                            100: 'rgba(255, 255, 255, 0.06)',
+                            200: 'rgba(255, 255, 255, 0.1)',
+                            300: 'rgba(255, 255, 255, 0.15)',
+                        },
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'slide-up': 'slideUp 0.6s ease-out forwards',
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(40px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
-        :root {
-            --bg-deep: #0a0a0f;
-            --bg-gradient-start: #0d1117;
-            --bg-gradient-end: #161b22;
-            --surface: rgba(255, 255, 255, 0.03);
-            --surface-hover: rgba(255, 255, 255, 0.06);
-            --border: rgba(255, 255, 255, 0.08);
-            --border-strong: rgba(255, 255, 255, 0.15);
-            --text-primary: #ffffff;
-            --text-secondary: #8b949e;
-            --text-muted: #6e7681;
-            --accent: #58a6ff;
-            --accent-glow: rgba(88, 166, 255, 0.3);
-            --accent-secondary: #f0883e;
-            --success: #3fb950;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-gradient-start);
-            color: var(--text-primary);
-            line-height: 1.6;
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0c;
+            color: #ffffff;
             overflow-x: hidden;
             min-height: 100vh;
         }
-
-        /* Navigation */
-        nav {
+        
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .noise-overlay {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            z-index: 1000;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(13, 17, 23, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-            color: var(--text-primary);
-            font-weight: 600;
-            font-size: 1.25rem;
-        }
-
-        .nav-brand img {
-            width: 32px;
-            height: 32px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-            align-items: center;
-        }
-
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover {
-            color: var(--text-primary);
-        }
-
-        .nav-cta {
-            padding: 0.5rem 1rem;
-            background: var(--accent);
-            color: var(--bg-deep) !important;
-            border-radius: 6px;
-            font-weight: 600;
-        }
-
-        .nav-cta:hover {
-            background: #79b8ff;
-        }
-
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 8rem 2rem 4rem;
-            position: relative;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 100px;
-            font-size: 0.875rem;
-            color: var(--accent);
-            margin-bottom: 2rem;
-        }
-
-        .hero-badge::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background: var(--accent);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.8); }
-        }
-
-        .hero h1 {
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            font-weight: 700;
-            line-height: 1.1;
-            letter-spacing: -0.02em;
-            margin-bottom: 1.5rem;
-            max-width: 900px;
-        }
-
-        .hero h1 .highlight {
-            color: var(--accent);
-        }
-
-        .hero-subtitle {
-            font-size: clamp(1.125rem, 2vw, 1.5rem);
-            color: var(--text-secondary);
-            max-width: 700px;
-            margin-bottom: 2.5rem;
-            line-height: 1.7;
-            font-weight: 400;
-        }
-
-        .hero-cta {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 4rem;
-        }
-
-        .btn {
-            padding: 1rem 2rem;
-            font-size: 1rem;
-            font-weight: 600;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: var(--bg-deep);
-            box-shadow: 0 0 30px var(--accent-glow);
-        }
-
-        .btn-primary:hover {
-            background: #79b8ff;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 40px var(--accent-glow);
-        }
-
-        .btn-secondary {
-            background: var(--surface);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            background: var(--surface-hover);
-            border-color: var(--border-strong);
-        }
-
-        .hero-stats {
-            display: flex;
-            gap: 4rem;
-            padding: 2rem 3rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-        }
-
-        .stat {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--accent);
-            display: block;
-            line-height: 1;
-        }
-
-        .stat-label {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            margin-top: 0.5rem;
-        }
-
-        /* Section Styles */
-        section {
-            padding: 6rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .section-label {
-            font-size: 0.875rem;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        .section-title {
-            font-size: clamp(2rem, 4vw, 3rem);
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 1rem;
-        }
-
-        .section-desc {
-            font-size: 1.125rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Pain Points Section */
-        .pain-points {
-            background: linear-gradient(180deg, transparent 0%, rgba(88, 166, 255, 0.03) 50%, transparent 100%);
-        }
-
-        .pain-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-        }
-
-        .pain-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2rem;
-            transition: all 0.3s;
-        }
-
-        .pain-card:hover {
-            background: var(--surface-hover);
-            border-color: var(--border-strong);
-            transform: translateY(-4px);
-        }
-
-        .pain-icon {
-            width: 48px;
-            height: 48px;
-            background: rgba(88, 166, 255, 0.1);
-            border: 1px solid rgba(88, 166, 255, 0.15);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .pain-card h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-
-        .pain-card p {
-            color: var(--text-secondary);
-            font-size: 0.9375rem;
-            line-height: 1.7;
-        }
-
-        /* Comparison Section */
-        .comparison {
-            background: var(--surface);
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .comparison-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-
-        .comparison-content h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .comparison-content h2 .highlight {
-            color: var(--accent);
-        }
-
-        .comparison-content > p {
-            color: var(--text-secondary);
-            font-size: 1.125rem;
-            margin-bottom: 2rem;
-        }
-
-        .metric {
-            margin-bottom: 2rem;
-        }
-
-        .metric-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.75rem;
-        }
-
-        .metric-label {
-            font-weight: 600;
-            font-size: 0.9375rem;
-        }
-
-        .metric-value {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.875rem;
-            color: var(--accent);
-        }
-
-        .metric-bar {
-            height: 8px;
-            background: var(--bg-gradient-end);
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .metric-fill {
+            width: 100%;
             height: 100%;
-            background: var(--accent);
-            border-radius: 4px;
-            transition: width 1s ease-out;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.02;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
         }
-
-        .metric-comparison {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 0.5rem;
-            font-size: 0.8125rem;
-            color: var(--text-muted);
-        }
-
-        /* Use Cases Section */
-        .use-cases-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-        }
-
-        .use-case-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2rem;
-            transition: all 0.3s;
-        }
-
-        .use-case-card:hover {
-            background: var(--surface-hover);
-            border-color: var(--accent);
-            transform: translateY(-4px);
-        }
-
-        .use-case-icon {
-            width: 56px;
-            height: 56px;
-            background: rgba(88, 166, 255, 0.12);
-            border: 1px solid rgba(88, 166, 255, 0.2);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.75rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .use-case-card h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-
-        .use-case-card ul {
-            list-style: none;
-            color: var(--text-secondary);
-            font-size: 0.9375rem;
-        }
-
-        .use-case-card li {
-            padding: 0.375rem 0;
-            padding-left: 1.25rem;
-            position: relative;
-        }
-
-        .use-case-card li::before {
-            content: '→';
-            position: absolute;
-            left: 0;
-            color: var(--accent);
-        }
-
-        /* Code Section */
-        .code-section {
-            background: transparent;
-        }
-
-        .code-container {
-            background: var(--bg-deep);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            overflow: hidden;
-        }
-
-        .code-header {
-            background: var(--surface);
-            padding: 1rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .code-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .code-dot.red { background: #ff5f56; }
-        .code-dot.yellow { background: #ffbd2e; }
-        .code-dot.green { background: #27c93f; }
-
-        .code-title {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8125rem;
-            color: var(--text-muted);
-            margin-left: auto;
-        }
-
-        .code-body {
-            padding: 1.5rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.875rem;
-            line-height: 1.8;
-            overflow-x: auto;
-        }
-
-        .code-line {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .line-num {
-            color: var(--text-muted);
-            min-width: 2rem;
-            text-align: right;
-            user-select: none;
-        }
-
-        .line-content {
-            color: var(--text-secondary);
-        }
-
-        .line-content .comment { color: var(--text-muted); }
-        .line-content .keyword { color: #ff7b72; }
-        .line-content .string { color: #a5d6ff; }
-        .line-content .function { color: #d2a8ff; }
-        .line-content .prompt { color: var(--success); }
-        .line-content .cmd { color: var(--text-primary); }
-
-        /* Skills Grid */
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-        }
-
-        .skill-item {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.25rem;
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            transition: all 0.2s;
-        }
-
-        .skill-item:hover {
-            background: var(--surface-hover);
-            border-color: var(--border-strong);
-        }
-
-        .skill-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(88, 166, 255, 0.1);
-            border: 1px solid rgba(88, 166, 255, 0.15);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            flex-shrink: 0;
-        }
-
-        .skill-content h4 {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9375rem;
-            color: var(--accent);
-            margin-bottom: 0.25rem;
-        }
-
-        .skill-content p {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        /* CTA Section */
-        .cta-wrapper {
-            padding: 0 2rem 4rem;
-        }
-
-        .cta {
-            text-align: center;
-            background: var(--surface);
-            border: 1px solid var(--border);
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 24px;
-            padding: 6rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
+            transition: all 0.3s ease;
         }
-
-        .cta h2 {
-            font-size: clamp(2rem, 4vw, 3rem);
-            font-weight: 700;
-            margin-bottom: 1rem;
+        
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.12);
         }
-
-        .cta p {
-            font-size: 1.125rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
+        
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+            pointer-events: none;
         }
-
-        /* Footer */
-        footer {
-            padding: 3rem 2rem;
-            text-align: center;
-            border-top: 1px solid var(--border);
+        
+        .orb-1 {
+            background: #ffffff;
+            width: 800px;
+            height: 800px;
         }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 1.5rem;
+        
+        .orb-2 {
+            background: #e0e0e0;
+            width: 600px;
+            height: 600px;
         }
-
-        .footer-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.875rem;
-            transition: color 0.2s;
-        }
-
-        .footer-links a:hover {
-            color: var(--text-primary);
-        }
-
-        .footer-copy {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .pain-grid,
-            .use-cases-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .comparison-grid {
-                grid-template-columns: 1fr;
-                gap: 3rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            nav {
-                padding: 1rem;
-            }
-            
-            .nav-links {
-                display: none;
-            }
-            
-            .hero {
-                padding: 6rem 1.5rem 3rem;
-            }
-            
-            .hero-stats {
-                flex-direction: column;
-                gap: 1.5rem;
-                padding: 1.5rem 2rem;
-            }
-            
-            section {
-                padding: 4rem 1.5rem;
-            }
-            
-            .pain-grid,
-            .use-cases-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .skills-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .cta {
-                margin: 0 1rem 3rem;
-            }
-        }
-
-        /* Scroll animations */
-        .fade-in {
+        
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+        .stagger-5 { animation-delay: 0.5s; }
+        .stagger-6 { animation-delay: 0.6s; }
+        
+        .reveal {
             opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
-        .fade-in.visible {
+        .reveal.visible {
             opacity: 1;
             transform: translateY(0);
+        }
+        
+        .bento-grid {
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: repeat(3, 1fr);
+        }
+        @media (max-width: 1024px) {
+            .bento-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .bento-grid { grid-template-columns: 1fr; }
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .code-header {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 0.875rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .code-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        *:focus-visible {
+            outline: 2px solid #ffffff;
+            outline-offset: 2px;
         }
     </style>
 </head>
 <body>
+    <!-- Noise overlay -->
+    <div class="noise-overlay"></div>
+    
+    <!-- Ambient orbs -->
+    <div class="orb orb-1 animate-float" style="top: -300px; left: -200px;"></div>
+    <div class="orb orb-2 animate-float" style="top: 50%; right: -200px; animation-delay: -3s;"></div>
+    
     <!-- Navigation -->
-    <nav>
-        <a href="#" class="nav-brand">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
-                <path d="M8 12h16M8 16h12M8 20h8" stroke="white" stroke-width="2" stroke-linecap="round"/>
-                <defs>
-                    <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
-                        <stop stop-color="#58a6ff"/>
-                        <stop offset="1" stop-color="#f0883e"/>
-                    </linearGradient>
-                </defs>
-            </svg>
-            gstack
-        </a>
-        <ul class="nav-links">
-            <li><a href="#problems">问题</a></li>
-            <li><a href="#comparison">对比</a></li>
-            <li><a href="#skills">技能</a></li>
-            <li><a href="#start">开始</a></li>
-            <li><a href="https://github.com/garrytan/gstack" class="nav-cta" target="_blank">GitHub</a></li>
-        </ul>
+    <nav class="fixed top-0 left-0 right-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center group-hover:bg-white/20 transition-all">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9h8M8 13h6M8 17h4"/>
+                    </svg>
+                </div>
+                <span class="font-heading font-bold text-xl tracking-tight">gstack</span>
+            </a>
+            
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#problems" class="text-sm text-white/60 hover:text-white transition-colors">问题</a>
+                <a href="#skills" class="text-sm text-white/60 hover:text-white transition-colors">技能</a>
+                <a href="#start" class="text-sm text-white/60 hover:text-white transition-colors">开始</a>
+                <a href="https://github.com/garrytan/gstack" target="_blank" class="px-4 py-2 text-sm font-medium bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg transition-all">
+                    GitHub
+                </a>
+            </div>
+            
+            <button class="md:hidden text-white/60" aria-label="Menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-badge">MIT 许可证 · 开源免费</div>
-        <h1>
-            一个人的<br>
-            <span class="highlight">工程团队</span>
-        </h1>
-        <p class="hero-subtitle">
-            gstack 将 Claude Code 转变为可管理的虚拟工程团队。
-            18 位专家，25 个斜杠命令，助你每天交付 10,000+ 行生产代码。
-        </p>
-        <div class="hero-cta">
-            <a href="#start" class="btn btn-primary">开始安装</a>
-            <a href="https://github.com/garrytan/gstack" class="btn btn-secondary" target="_blank">查看文档</a>
+    <section class="relative min-h-screen flex items-center justify-center px-6 pt-20 overflow-hidden">
+        <div class="max-w-6xl mx-auto text-center relative z-10">
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-8 opacity-0 animate-slide-up">
+                <span class="w-2 h-2 rounded-full bg-white/60"></span>
+                <span class="text-sm text-white/80">MIT 许可证 · 开源免费</span>
+            </div>
+            
+            <!-- Main headline -->
+            <h1 class="font-display font-bold text-5xl md:text-7xl lg:text-8xl tracking-tight mb-6 opacity-0 animate-slide-up stagger-1 text-white">
+                一个人的<br>
+                工程团队
+            </h1>
+            
+            <!-- Subtitle -->
+            <p class="font-body text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-10 leading-relaxed opacity-0 animate-slide-up stagger-2">
+                gstack 将 Claude Code 转变为可管理的虚拟工程团队。
+                <br class="hidden md:block">18 位专家，25 个斜杠命令，助你每天交付 10,000+ 行生产代码。
+            </p>
+            
+            <!-- CTA buttons -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 opacity-0 animate-slide-up stagger-3">
+                <a href="#start" class="group px-8 py-4 bg-white text-black font-semibold rounded-xl hover:bg-white/90 transition-all hover:scale-105 flex items-center gap-2">
+                    开始安装
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </a>
+                <a href="https://github.com/garrytan/gstack" target="_blank" class="px-8 py-4 glass-card text-white font-medium rounded-xl hover:bg-white/10 transition-all flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    查看文档
+                </a>
+            </div>
+            
+            <!-- Stats row -->
+            <div class="grid grid-cols-3 gap-4 max-w-2xl mx-auto opacity-0 animate-slide-up stagger-4">
+                <div class="glass-card p-6">
+                    <div class="font-heading font-bold text-3xl md:text-4xl text-white mb-1">600K+</div>
+                    <div class="text-sm text-white/40">60天代码行数</div>
+                </div>
+                <div class="glass-card p-6">
+                    <div class="font-heading font-bold text-3xl md:text-4xl text-white mb-1">18</div>
+                    <div class="text-sm text-white/40">专家角色</div>
+                </div>
+                <div class="glass-card p-6">
+                    <div class="font-heading font-bold text-3xl md:text-4xl text-white mb-1">25</div>
+                    <div class="text-sm text-white/40">斜杠命令</div>
+                </div>
+            </div>
         </div>
-        <div class="hero-stats">
-            <div class="stat">
-                <span class="stat-number">600K+</span>
-                <span class="stat-label">60天代码行数</span>
-            </div>
-            <div class="stat">
-                <span class="stat-number">18</span>
-                <span class="stat-label">专家角色</span>
-            </div>
-            <div class="stat">
-                <span class="stat-number">25</span>
-                <span class="stat-label">斜杠命令</span>
-            </div>
+        
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/20">
+            <span class="text-xs tracking-widest uppercase">Scroll</span>
+            <div class="w-px h-8 bg-white/20"></div>
         </div>
     </section>
 
-    <!-- Pain Points Section -->
-    <section class="pain-points" id="problems">
-        <div class="section-header">
-            <div class="section-label">// 问题</div>
-            <h2 class="section-title">AI 开发正在被低效拖慢</h2>
-            <p class="section-desc">当模型能力突飞猛进时，我们的开发流程却停留在石器时代。</p>
-        </div>
-        <div class="pain-grid">
-            <div class="pain-card">
-                <div class="pain-icon">😵</div>
-                <h3>提示词混乱无章</h3>
-                <p>每次与 AI 对话都从零开始，没有结构化流程，重复解释上下文，浪费大量 token 和时间。</p>
+    <!-- Problems Section -->
+    <section id="problems" class="relative py-32 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <span class="inline-block px-3 py-1 text-xs font-medium tracking-widest uppercase text-white/60 bg-white/5 rounded-full mb-4">问题</span>
+                <h2 class="font-display font-bold text-4xl md:text-5xl mb-4 text-white">AI 开发正在被低效拖慢</h2>
+                <p class="text-white/40 max-w-xl mx-auto">当模型能力突飞猛进时，我们的开发流程却停留在石器时代。</p>
             </div>
-            <div class="pain-card">
-                <div class="pain-icon">🔍</div>
-                <h3>代码审查流于形式</h3>
-                <p>AI 生成的代码看似正确，却暗藏 bug。传统审查无法发现那些"能通过 CI 但在生产爆炸"的问题。</p>
-            </div>
-            <div class="pain-card">
-                <div class="pain-icon">🐛</div>
-                <h3>测试覆盖率缺失</h3>
-                <p>追求速度时测试被牺牲，导致回归 bug 频发。没有自动化 QA，每次发布都是赌博。</p>
+            
+            <div class="bento-grid">
+                <div class="glass-card p-8 transition-all duration-300 reveal hover:-translate-y-2">
+                    <div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                        <svg class="w-7 h-7 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-heading font-semibold text-xl mb-3 text-white">提示词混乱无章</h3>
+                    <p class="text-white/40 leading-relaxed">每次与 AI 对话都从零开始，没有结构化流程，重复解释上下文，浪费大量 token 和时间。</p>
+                </div>
+                
+                <div class="glass-card p-8 transition-all duration-300 reveal hover:-translate-y-2" style="animation-delay: 0.1s">
+                    <div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                        <svg class="w-7 h-7 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-heading font-semibold text-xl mb-3 text-white">代码审查流于形式</h3>
+                    <p class="text-white/40 leading-relaxed">AI 生成的代码看似正确，却暗藏 bug。传统审查无法发现那些"能通过 CI 但在生产爆炸"的问题。</p>
+                </div>
+                
+                <div class="glass-card p-8 transition-all duration-300 reveal hover:-translate-y-2" style="animation-delay: 0.2s">
+                    <div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                        <svg class="w-7 h-7 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-heading font-semibold text-xl mb-3 text-white">测试覆盖率缺失</h3>
+                    <p class="text-white/40 leading-relaxed">追求速度时测试被牺牲，导致回归 bug 频发。没有自动化 QA，每次发布都是赌博。</p>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Comparison Section -->
-    <section class="comparison" id="comparison">
-        <div class="comparison-grid">
-            <div class="comparison-content">
-                <h2>
-                    开发者值得拥有<br>
-                    <span class="highlight">10倍效率的提升</span>
-                </h2>
-                <p>同一个人，不同的时代。区别在于工具。</p>
+    <section id="comparison" class="relative py-32 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <!-- Left: Content -->
+                <div class="reveal">
+                    <span class="inline-block px-3 py-1 text-xs font-medium tracking-widest uppercase text-white/50 bg-white/5 rounded-full mb-4">效率对比</span>
+                    <h2 class="font-display font-bold text-4xl md:text-5xl mb-6 text-white">
+                        开发者值得拥有<br>
+                        10倍效率的提升
+                    </h2>
+                    <p class="text-white/40 mb-10">同一个人，不同的时代。区别在于工具。</p>
+                    
+                    <!-- Metrics -->
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-heading font-medium text-white">代码产出</span>
+                                <span class="text-white font-mono text-sm">10x</span>
+                            </div>
+                            <div class="h-2 bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full w-0 bg-white/60 rounded-full transition-all duration-1000 ease-out metric-bar"></div>
+                            </div>
+                            <p class="text-xs text-white/30 mt-1">传统: 1,000 行/天 → gstack: 10,000+ 行/天</p>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-heading font-medium text-white">测试覆盖率</span>
+                                <span class="text-white font-mono text-sm">35%</span>
+                            </div>
+                            <div class="h-2 bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full w-0 bg-white/60 rounded-full transition-all duration-1000 ease-out metric-bar"></div>
+                            </div>
+                            <p class="text-xs text-white/30 mt-1">自动生成测试 · 每个 bug 修复都有回归测试</p>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-heading font-medium text-white">并行冲刺</span>
+                                <span class="text-white font-mono text-sm">15x</span>
+                            </div>
+                            <div class="h-2 bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full w-0 bg-white/60 rounded-full transition-all duration-1000 ease-out metric-bar"></div>
+                            </div>
+                            <p class="text-xs text-white/30 mt-1">传统: 1 个功能/天 → gstack: 10-15 个并行冲刺</p>
+                        </div>
+                    </div>
+                </div>
                 
-                <div class="metric">
-                    <div class="metric-header">
-                        <span class="metric-label">代码产出</span>
-                        <span class="metric-value">10x</span>
+                <!-- Right: Code demo -->
+                <div class="reveal code-block">
+                    <div class="code-header">
+                        <div class="code-dot bg-white/20"></div>
+                        <div class="code-dot bg-white/20"></div>
+                        <div class="code-dot bg-white/20"></div>
+                        <span class="ml-4 text-xs text-white/40 font-mono">Garry Tan 的 2026 贡献数据</span>
                     </div>
-                    <div class="metric-bar">
-                        <div class="metric-fill" style="width: 95%"></div>
-                    </div>
-                    <div class="metric-comparison">
-                        <span>传统开发: 1,000 行/天</span>
-                        <span>gstack: 10,000+ 行/天</span>
-                    </div>
-                </div>
-                
-                <div class="metric">
-                    <div class="metric-header">
-                        <span class="metric-label">测试覆盖率</span>
-                        <span class="metric-value">35%</span>
-                    </div>
-                    <div class="metric-bar">
-                        <div class="metric-fill" style="width: 90%"></div>
-                    </div>
-                    <div class="metric-comparison">
-                        <span>自动生成测试</span>
-                        <span>每个 bug 修复都有回归测试</span>
-                    </div>
-                </div>
-                
-                <div class="metric">
-                    <div class="metric-header">
-                        <span class="metric-label">并行冲刺</span>
-                        <span class="metric-value">15x</span>
-                    </div>
-                    <div class="metric-bar">
-                        <div class="metric-fill" style="width: 100%"></div>
-                    </div>
-                    <div class="metric-comparison">
-                        <span>传统: 1 个功能/天</span>
-                        <span>gstack: 10-15 个并行冲刺</span>
-                    </div>
-                </div>
-            </div>
-            <div class="code-container">
-                <div class="code-header">
-                    <div class="code-dot red"></div>
-                    <div class="code-dot yellow"></div>
-                    <div class="code-dot green"></div>
-                    <div class="code-title">Garry Tan 的 2026 贡献数据</div>
-                </div>
-                <div class="code-body">
-                    <div class="code-line">
-                        <span class="line-num">1</span>
-                        <span class="line-content"><span class="comment"># 2026年 GitHub 贡献统计</span></span>
-                    </div>
-                    <div class="code-line">
-                        <span class="line-num">2</span>
-                        <span class="line-content"></span>
-                    </div>
-                    <div class="code-line">
-                        <span class="line-num">3</span>
-                        <span class="line-content"><span class="prompt">$</span> <span class="cmd">gstack stats --year=2026</span></span>
-                    </div>
-                    <div class="code-line">
-                        <span class="line-num">4</span>
-                        <span class="line-content"></span>
-                    </div>
-                    <div class="code-line">
-                        <span class="line-num">5</span>
-                        <span class="line-content">📊 <span class="string">"过去 7 天"</span></span>
-                    </div>
-                    <div class="code-line">
-                        <span class="line-num">6</span>
-                        <span class="line-content">   新增代码: <span class="function">140,751</span> 行</span>
-                    </div>
-                    <div class="code-line">
-                        <span class="line-num">7</span>
-                        <span class="line-content">   提交次数: <span class="function">362</span> 次</span>
-                    </div>
-                    <div class="code-line">
-                        <span class="line-num">8</span>
-                        <span class="line-content">   净增代码: <span class="function">115,000</span> 行</span>
-                    </div>
-                    <div class="code-line">
-                        <span class="line-num">9</span>
-                        <span class="line-content"></span>
-                    </div>
-                    <div class="code-line">
-                        <span class="line-num">10</span>
-                        <span class="line-content">📈 <span class="string">"60 天总计"</span></span>
-                    </div>
-                    <div class="code-line">
-                        <span class="line-num">11</span>
-                        <span class="line-content">   生产代码: <span class="function">600,000+</span> 行</span>
-                    </div>
-                    <div class="code-line">
-                        <span class="line-num">12</span>
-                        <span class="line-content">   测试占比: <span class="function">35%</span></span>
-                    </div>
-                    <div class="code-line">
-                        <span class="line-num">13</span>
-                        <span class="line-content">   日均产出: <span class="function">10,000-20,000</span> 行</span>
+                    <div class="p-6 font-mono text-sm leading-relaxed">
+                        <div class="text-white/30 mb-4"># 2026年 GitHub 贡献统计</div>
+                        <div class="mb-6">
+                            <span class="text-white/60">$</span> <span class="text-white">gstack stats --year=2026</span>
+                        </div>
+                        <div class="text-white/50 mb-4">📊 "过去 7 天"</div>
+                        <div class="space-y-1 mb-6 pl-4">
+                            <div class="text-white/70">新增代码: <span class="text-white">140,751</span> 行</div>
+                            <div class="text-white/70">提交次数: <span class="text-white">362</span> 次</div>
+                            <div class="text-white/70">净增代码: <span class="text-white">115,000</span> 行</div>
+                        </div>
+                        <div class="text-white/50 mb-4">📈 "60 天总计"</div>
+                        <div class="space-y-1 pl-4">
+                            <div class="text-white/70">生产代码: <span class="text-white">600,000+</span> 行</div>
+                            <div class="text-white/70">测试占比: <span class="text-white">35%</span></div>
+                            <div class="text-white/70">日均产出: <span class="text-white">10,000-20,000</span> 行</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -898,229 +401,306 @@
     </section>
 
     <!-- Use Cases Section -->
-    <section id="use-cases">
-        <div class="section-header">
-            <div class="section-label">// 应用场景</div>
-            <h2 class="section-title">为不同角色量身定制</h2>
-            <p class="section-desc">无论你是创始人、技术负责人还是首次使用 Claude Code 的用户，gstack 都能让你事半功倍。</p>
-        </div>
-        <div class="use-cases-grid">
-            <div class="use-case-card">
-                <div class="use-case-icon">🚀</div>
-                <h3>创始人 & CEO</h3>
-                <ul>
-                    <li>像二十人团队一样构建产品</li>
-                    <li>在写代码前重新框定问题</li>
-                    <li>每天发布 10,000+ 行代码</li>
-                </ul>
+    <section class="relative py-32 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <span class="inline-block px-3 py-1 text-xs font-medium tracking-widest uppercase text-white/50 bg-white/5 rounded-full mb-4">应用场景</span>
+                <h2 class="font-display font-bold text-4xl md:text-5xl mb-4 text-white">为不同角色量身定制</h2>
+                <p class="text-white/40 max-w-xl mx-auto">无论你是创始人、技术负责人还是首次使用 Claude Code 的用户，gstack 都能让你事半功倍。</p>
             </div>
-            <div class="use-case-card">
-                <div class="use-case-icon">⚡</div>
-                <h3>技术负责人</h3>
-                <ul>
-                    <li>严格的架构审查和数据流分析</li>
-                    <li>自动化 QA 和回归测试</li>
-                    <li>一键发布到生产环境</li>
-                </ul>
-            </div>
-            <div class="use-case-card">
-                <div class="use-case-icon">🎯</div>
-                <h3>Claude Code 新用户</h3>
-                <ul>
-                    <li>结构化角色，而非空白提示</li>
-                    <li>最佳入门方式，避免新手陷阱</li>
-                    <li>18 位专家随时待命</li>
-                </ul>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="glass-card p-8 transition-all duration-300 reveal hover:-translate-y-2">
+                    <div class="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-heading font-semibold text-xl mb-4 text-white">创始人 & CEO</h3>
+                    <ul class="space-y-3 text-white/40 text-sm">
+                        <li class="flex items-start gap-2">
+                            <span class="text-white/30 mt-0.5">→</span>
+                            像二十人团队一样构建产品
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-white/30 mt-0.5">→</span>
+                            在写代码前重新框定问题
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-white/30 mt-0.5">→</span>
+                            每天发布 10,000+ 行代码
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="glass-card p-8 transition-all duration-300 reveal hover:-translate-y-2" style="animation-delay: 0.1s">
+                    <div class="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-heading font-semibold text-xl mb-4 text-white">技术负责人</h3>
+                    <ul class="space-y-3 text-white/40 text-sm">
+                        <li class="flex items-start gap-2">
+                            <span class="text-white/30 mt-0.5">→</span>
+                            严格的架构审查和数据流分析
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-white/30 mt-0.5">→</span>
+                            自动化 QA 和回归测试
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-white/30 mt-0.5">→</span>
+                            一键发布到生产环境
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="glass-card p-8 transition-all duration-300 reveal hover:-translate-y-2" style="animation-delay: 0.2s">
+                    <div class="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-heading font-semibold text-xl mb-4 text-white">Claude Code 新用户</h3>
+                    <ul class="space-y-3 text-white/40 text-sm">
+                        <li class="flex items-start gap-2">
+                            <span class="text-white/30 mt-0.5">→</span>
+                            结构化角色，而非空白提示
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-white/30 mt-0.5">→</span>
+                            最佳入门方式，避免新手陷阱
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-white/30 mt-0.5">→</span>
+                            18 位专家随时待命
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Skills Section -->
-    <section id="skills">
-        <div class="section-header">
-            <div class="section-label">// 核心技能</div>
-            <h2 class="section-title">18 位专家，七种强力工具</h2>
-            <p class="section-desc">每个技能都输入到下一个，形成完整的开发冲刺流程。</p>
-        </div>
-        <div class="skills-grid">
-            <div class="skill-item">
-                <div class="skill-icon">💭</div>
-                <div class="skill-content">
-                    <h4>/office-hours</h4>
-                    <p>YC 办公时间 — 六个强制性问题，在你写代码之前重新框定产品</p>
-                </div>
+    <section id="skills" class="relative py-32 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <span class="inline-block px-3 py-1 text-xs font-medium tracking-widest uppercase text-white/50 bg-white/5 rounded-full mb-4">核心技能</span>
+                <h2 class="font-display font-bold text-4xl md:text-5xl mb-4 text-white">18 位专家，七种强力工具</h2>
+                <p class="text-white/40 max-w-xl mx-auto">每个技能都输入到下一个，形成完整的开发冲刺流程。</p>
             </div>
-            <div class="skill-item">
-                <div class="skill-icon">📋</div>
-                <div class="skill-content">
-                    <h4>/plan-ceo-review</h4>
-                    <p>CEO 视角 — 重新思考问题，找到隐藏的 10 星产品机会</p>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="glass-card p-6 transition-all duration-300 reveal hover:bg-white/5 group">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                            💭
+                        </div>
+                        <span class="font-mono text-sm text-white/80">/office-hours</span>
+                    </div>
+                    <p class="text-white/40 text-sm">YC 办公时间 — 六个强制性问题，在你写代码之前重新框定产品</p>
                 </div>
-            </div>
-            <div class="skill-item">
-                <div class="skill-icon">🏗️</div>
-                <div class="skill-content">
-                    <h4>/plan-eng-review</h4>
-                    <p>工程经理 — 锁定架构、数据流、边界情况和测试计划</p>
+                
+                <div class="glass-card p-6 transition-all duration-300 reveal hover:bg-white/5 group" style="animation-delay: 0.05s">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                            📋
+                        </div>
+                        <span class="font-mono text-sm text-white/80">/plan-ceo-review</span>
+                    </div>
+                    <p class="text-white/40 text-sm">CEO 视角 — 重新思考问题，找到隐藏的 10 星产品机会</p>
                 </div>
-            </div>
-            <div class="skill-item">
-                <div class="skill-icon">👀</div>
-                <div class="skill-content">
-                    <h4>/review</h4>
-                    <p>高级工程师 — 找到通过 CI 但在生产爆炸的 bug</p>
+                
+                <div class="glass-card p-6 transition-all duration-300 reveal hover:bg-white/5 group" style="animation-delay: 0.1s">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                            🏗️
+                        </div>
+                        <span class="font-mono text-sm text-white/80">/plan-eng-review</span>
+                    </div>
+                    <p class="text-white/40 text-sm">工程经理 — 锁定架构、数据流、边界情况和测试计划</p>
                 </div>
-            </div>
-            <div class="skill-item">
-                <div class="skill-icon">🧪</div>
-                <div class="skill-content">
-                    <h4>/qa</h4>
-                    <p>QA 负责人 — 真实浏览器测试，自动修复并生成回归测试</p>
+                
+                <div class="glass-card p-6 transition-all duration-300 reveal hover:bg-white/5 group" style="animation-delay: 0.15s">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                            👀
+                        </div>
+                        <span class="font-mono text-sm text-white/80">/review</span>
+                    </div>
+                    <p class="text-white/40 text-sm">高级工程师 — 找到通过 CI 但在生产爆炸的 bug</p>
                 </div>
-            </div>
-            <div class="skill-item">
-                <div class="skill-icon">🚀</div>
-                <div class="skill-content">
-                    <h4>/ship</h4>
-                    <p>发布工程师 — 同步、测试、审计覆盖率、推送、打开 PR</p>
+                
+                <div class="glass-card p-6 transition-all duration-300 reveal hover:bg-white/5 group" style="animation-delay: 0.2s">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                            🧪
+                        </div>
+                        <span class="font-mono text-sm text-white/80">/qa</span>
+                    </div>
+                    <p class="text-white/40 text-sm">QA 负责人 — 真实浏览器测试，自动修复并生成回归测试</p>
                 </div>
-            </div>
-            <div class="skill-item">
-                <div class="skill-icon">🌐</div>
-                <div class="skill-content">
-                    <h4>/browse</h4>
-                    <p>QA 工程师 — 给代理眼睛，真实 Chromium 浏览器和截图</p>
+                
+                <div class="glass-card p-6 transition-all duration-300 reveal hover:bg-white/5 group" style="animation-delay: 0.25s">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                            🚀
+                        </div>
+                        <span class="font-mono text-sm text-white/80">/ship</span>
+                    </div>
+                    <p class="text-white/40 text-sm">发布工程师 — 同步、测试、审计覆盖率、推送、打开 PR</p>
                 </div>
-            </div>
-            <div class="skill-item">
-                <div class="skill-icon">🤖</div>
-                <div class="skill-content">
-                    <h4>/codex</h4>
-                    <p>第二意见 — OpenAI Codex CLI 的独立代码审查</p>
+                
+                <div class="glass-card p-6 transition-all duration-300 reveal hover:bg-white/5 group" style="animation-delay: 0.3s">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                            🌐
+                        </div>
+                        <span class="font-mono text-sm text-white/80">/browse</span>
+                    </div>
+                    <p class="text-white/40 text-sm">QA 工程师 — 给代理眼睛，真实 Chromium 浏览器和截图</p>
+                </div>
+                
+                <div class="glass-card p-6 transition-all duration-300 reveal hover:bg-white/5 group" style="animation-delay: 0.35s">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                            🤖
+                        </div>
+                        <span class="font-mono text-sm text-white/80">/codex</span>
+                    </div>
+                    <p class="text-white/40 text-sm">第二意见 — OpenAI Codex CLI 的独立代码审查</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Quick Start Section -->
-    <section class="code-section" id="start">
-        <div class="section-header">
-            <div class="section-label">// 快速开始</div>
-            <h2 class="section-title">30 秒安装，5 分钟上手</h2>
-            <p class="section-desc">要求：Claude Code、Git、Bun v1.0+、Node.js（Windows）</p>
-        </div>
-        <div class="code-container">
-            <div class="code-header">
-                <div class="code-dot red"></div>
-                <div class="code-dot yellow"></div>
-                <div class="code-dot green"></div>
-                <div class="code-title">terminal — bash</div>
+    <section id="start" class="relative py-32 px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <span class="inline-block px-3 py-1 text-xs font-medium tracking-widest uppercase text-white/50 bg-white/5 rounded-full mb-4">快速开始</span>
+                <h2 class="font-display font-bold text-4xl md:text-5xl mb-4 text-white">30 秒安装，5 分钟上手</h2>
+                <p class="text-white/40">要求：Claude Code、Git、Bun v1.0+、Node.js（Windows）</p>
             </div>
-            <div class="code-body">
-                <div class="code-line">
-                    <span class="line-num">1</span>
-                    <span class="line-content"><span class="comment"># 安装 gstack</span></span>
+            
+            <div class="reveal code-block">
+                <div class="code-header">
+                    <div class="code-dot bg-white/20"></div>
+                    <div class="code-dot bg-white/20"></div>
+                    <div class="code-dot bg-white/20"></div>
+                    <span class="ml-4 text-xs text-white/40 font-mono">terminal — bash</span>
                 </div>
-                <div class="code-line">
-                    <span class="line-num">2</span>
-                    <span class="line-content"><span class="prompt">$</span> <span class="cmd">git clone https://github.com/garrytan/gstack.git ~/.claude/skills/gstack</span></span>
-                </div>
-                <div class="code-line">
-                    <span class="line-num">3</span>
-                    <span class="line-content"><span class="prompt">$</span> <span class="cmd">cd ~/.claude/skills/gstack && ./setup</span></span>
-                </div>
-                <div class="code-line">
-                    <span class="line-num">4</span>
-                    <span class="line-content"></span>
-                </div>
-                <div class="code-line">
-                    <span class="line-num">5</span>
-                    <span class="line-content"><span class="comment"># 开始使用</span></span>
-                </div>
-                <div class="code-line">
-                    <span class="line-num">6</span>
-                    <span class="line-content"><span class="prompt">$</span> <span class="cmd">/office-hours</span> <span class="comment"># 描述你正在构建的内容</span></span>
-                </div>
-                <div class="code-line">
-                    <span class="line-num">7</span>
-                    <span class="line-content"><span class="prompt">$</span> <span class="cmd">/plan-ceo-review</span> <span class="comment"># 功能想法审查</span></span>
-                </div>
-                <div class="code-line">
-                    <span class="line-num">8</span>
-                    <span class="line-content"><span class="prompt">$</span> <span class="cmd">/review</span> <span class="comment"># 代码审查</span></span>
-                </div>
-                <div class="code-line">
-                    <span class="line-num">9</span>
-                    <span class="line-content"><span class="prompt">$</span> <span class="cmd">/qa https://staging.myapp.com</span> <span class="comment"># 预发布测试</span></span>
-                </div>
-                <div class="code-line">
-                    <span class="line-num">10</span>
-                    <span class="line-content"><span class="prompt">$</span> <span class="cmd">/ship</span> <span class="comment"># 发布 PR</span></span>
+                <div class="p-6 font-mono text-sm leading-relaxed overflow-x-auto">
+                    <div class="text-white/30 mb-4"># 安装 gstack</div>
+                    <div class="mb-3">
+                        <span class="text-white/50">$</span> <span class="text-white">git clone https://github.com/garrytan/gstack.git ~/.claude/skills/gstack</span>
+                    </div>
+                    <div class="mb-6">
+                        <span class="text-white/50">$</span> <span class="text-white">cd ~/.claude/skills/gstack && ./setup</span>
+                    </div>
+                    
+                    <div class="text-white/30 mb-4"># 开始使用</div>
+                    <div class="space-y-3">
+                        <div>
+                            <span class="text-white/50">$</span> <span class="text-white">/office-hours</span> <span class="text-white/30"># 描述你正在构建的内容</span>
+                        </div>
+                        <div>
+                            <span class="text-white/50">$</span> <span class="text-white">/plan-ceo-review</span> <span class="text-white/30"># 功能想法审查</span>
+                        </div>
+                        <div>
+                            <span class="text-white/50">$</span> <span class="text-white">/review</span> <span class="text-white/30"># 代码审查</span>
+                        </div>
+                        <div>
+                            <span class="text-white/50">$</span> <span class="text-white">/qa https://staging.myapp.com</span> <span class="text-white/30"># 预发布测试</span>
+                        </div>
+                        <div>
+                            <span class="text-white/50">$</span> <span class="text-white">/ship</span> <span class="text-white/30"># 发布 PR</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- CTA Section -->
-    <div class="cta-wrapper">
-        <div class="cta">
-            <h2>来乘风破浪</h2>
-            <p>免费、MIT 许可、开源、立即可用。没有高级版。没有等待名单。Fork 它，改进它，让它成为你自己的。</p>
-            <div class="hero-cta">
-                <a href="https://github.com/garrytan/gstack" class="btn btn-primary" target="_blank">Fork on GitHub</a>
-                <a href="https://ycombinator.com/software" class="btn btn-secondary" target="_blank">我们在招聘</a>
+    <section class="relative py-32 px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="glass-card p-16 text-center reveal">
+                <h2 class="font-display font-bold text-4xl md:text-5xl mb-4 text-white">来乘风破浪</h2>
+                <p class="text-white/40 max-w-lg mx-auto mb-10">免费、MIT 许可、开源、立即可用。没有高级版。没有等待名单。Fork 它，改进它，让它成为你自己的。</p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="https://github.com/garrytan/gstack" target="_blank" class="group px-8 py-4 bg-white text-black font-semibold rounded-xl hover:bg-white/90 transition-all flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                        Fork on GitHub
+                    </a>
+                    <a href="https://ycombinator.com/software" target="_blank" class="px-8 py-4 glass-card text-white font-medium rounded-xl hover:bg-white/10 transition-all">
+                        我们在招聘
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- Footer -->
-    <footer>
-        <div class="footer-links">
-            <a href="https://github.com/garrytan/gstack" target="_blank">GitHub</a>
-            <a href="https://x.com/garrytan" target="_blank">Garry Tan</a>
-            <a href="https://www.ycombinator.com/" target="_blank">Y Combinator</a>
+    <footer class="py-12 px-6 border-t border-white/5">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9h8M8 13h6M8 17h4"/>
+                    </svg>
+                </div>
+                <span class="font-heading font-semibold text-white">gstack</span>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <a href="https://github.com/garrytan/gstack" target="_blank" class="text-white/40 hover:text-white transition-colors text-sm">GitHub</a>
+                <a href="https://x.com/garrytan" target="_blank" class="text-white/40 hover:text-white transition-colors text-sm">Garry Tan</a>
+                <a href="https://www.ycombinator.com/" target="_blank" class="text-white/40 hover:text-white transition-colors text-sm">Y Combinator</a>
+            </div>
+            
+            <p class="text-white/30 text-sm">MIT 许可证 · 2026 gstack</p>
         </div>
-        <p class="footer-copy">MIT 许可证 · 2026 gstack</p>
     </footer>
 
     <script>
-        // Scroll animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
+        // Intersection Observer for reveal animations
+        const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
+                    
+                    // Animate metric bars when visible
+                    if (entry.target.querySelector('.metric-bar')) {
+                        const bars = entry.target.querySelectorAll('.metric-bar');
+                        bars.forEach((bar, index) => {
+                            setTimeout(() => {
+                                const widths = ['95%', '90%', '100%'];
+                                bar.style.width = widths[index] || '0%';
+                            }, index * 200);
+                        });
+                    }
                 }
             });
-        }, observerOptions);
-
-        document.querySelectorAll('.section-header, .pain-card, .use-case-card, .skill-item, .metric').forEach(el => {
-            el.classList.add('fade-in');
-            observer.observe(el);
+        }, { 
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
         });
-
-        // Animate metric bars on scroll
-        const metricObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const fills = entry.target.querySelectorAll('.metric-fill');
-                    fills.forEach(fill => {
-                        const width = fill.style.width;
-                        fill.style.width = '0';
-                        setTimeout(() => {
-                            fill.style.width = width;
-                        }, 100);
-                    });
+        
+        document.querySelectorAll('.reveal').forEach(el => {
+            revealObserver.observe(el);
+        });
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
-        }, { threshold: 0.5 });
-
-        document.querySelectorAll('.metric').forEach(metric => {
-            metricObserver.observe(metric);
         });
     </script>
 </body>
